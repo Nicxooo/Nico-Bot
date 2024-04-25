@@ -7,9 +7,9 @@ module.exports = {
     
     async execute(interaction) {
         const embed = new EmbedBuilder()
-        .setColor(800000)
+        .setColor("Random")
         .setTitle('Nico bot at your service!')
-        .setURL('https://matias.ma/nsfw/')
+        .setURL('https://support.discord.com/hc/en-us')
         .setDescription("Here's a list of available commands:")
         .setAuthor(
             {
@@ -21,13 +21,20 @@ module.exports = {
         .setThumbnail(interaction.client.user.displayAvatarURL())
         .addFields(
             {
-                name: 'More Help.',
-                value: 'https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ#:~:text=With%20Slash%20Commands%2C%20all%20you,using%20Slash%20Commands%20right%20now.' 
+                name: '/help',
+                value: 'a little help to get you started!' 
             },
             { 
-                name: 'Develop your own!', 
-                value: 'https://discord.com/developers/docs/intro', 
-                inline: true 
+                name: '/poll', 
+                value: "can't decide? do a poll!"
+            },
+            { 
+                name: '/kick', 
+                value: "now don't be rude 🤔."
+            },
+            { 
+                name: '/8ball', 
+                value: "don't trust it."
             },
         )
         .setTimestamp(Date.now())

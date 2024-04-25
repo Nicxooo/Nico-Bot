@@ -5,9 +5,12 @@ module.exports = {
 	once: true,
 	async execute(client) {
 		console.log(`Logged in as ${client.user.tag}`);
-        client.user.setActivity({
-            name: '/help',
-            type: ActivityType.Watching
-		})
+        client.user.setPresence({
+			activities: [{
+				name: '/help',
+				type: ActivityType.Listening
+			}],
+			status: 'idle'
+		});
 	}
 }
