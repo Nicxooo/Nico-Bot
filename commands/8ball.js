@@ -29,7 +29,7 @@ module.exports = {
             .setTitle('8Ball')
             .setAuthor({ name: user.username, URL: user.displayAvatarURL() })
             .setColor('Random')
-            .setDescription(question)
+            .setDescription('Careful what you ask for.')
             .addFields(
                 {
                     name: 'Question:',
