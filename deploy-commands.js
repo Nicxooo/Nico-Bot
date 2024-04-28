@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { REST, Routes } = require('discord.js');
-const { clientId, token } = require('./config.json');
+const { clientId, guildId, token } = require('./config.json');
 
 function getFiles(dir) {
     const files = fs.readdirSync(dir, {
@@ -36,3 +36,13 @@ const rest = new REST({ version: '10' }).setToken(token);
 rest.put(Routes.applicationCommands(clientId), { body: commands })
     .then(() => console.log('Successfully registered application commands!'))
     .catch(console.error);
+
+// // for guild-based commands
+// rest.delete(Routes.applicationGuildCommands(clientId, guildId, 'ping'), { body: commands })
+// 	.then(() => console.log('Successfully deleted guild command'))
+// 	.catch(console.error);
+
+// // for global commands
+// rest.delete(Routes.applicationCommands(clientId, 'ping'), { body: commands })
+// 	.then(() => console.log('Successfully deleted application command'))
+// 	.catch(console.error);
