@@ -22,19 +22,23 @@ module.exports = {
         .addFields(
             {
                 name: '/help',
-                value: 'a little help to get you started!' 
+                value: 'a little help to get you started.' 
             },
             { 
                 name: '/poll', 
                 value: "can't decide? do a poll!"
             },
             { 
-                name: '/kick', 
-                value: "now don't be rude 🤔."
+                name: '/server', 
+                value: 'know your current server.'
             },
             { 
                 name: '/8ball', 
                 value: "don't trust it."
+            },
+            { 
+                name: "*Explore the bot!*",
+                value: 'Have Fun!~~'
             },
         )
         .setTimestamp(Date.now())

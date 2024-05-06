@@ -36,13 +36,3 @@ const rest = new REST({ version: '10' }).setToken(token);
 rest.put(Routes.applicationCommands(clientId), { body: commands })
     .then(() => console.log('Successfully registered application commands!'))
     .catch(console.error);
-
-// // for guild-based commands
-// rest.delete(Routes.applicationGuildCommands(clientId, guildId, 'ping'), { body: commands })
-// 	.then(() => console.log('Successfully deleted guild command'))
-// 	.catch(console.error);
-
-// // for global commands
-// rest.delete(Routes.applicationCommands(clientId, 'ping'), { body: commands })
-// 	.then(() => console.log('Successfully deleted application command'))
-// 	.catch(console.error);

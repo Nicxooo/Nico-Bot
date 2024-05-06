@@ -13,6 +13,10 @@ const Guild = sequelize.define('guild', {
     welcomeRoleId: {
         type: Sequelize.STRING,
         allowNull: true
+    },
+    welcomeBackground: {
+        type: Sequelize.STRING,
+        allowNull: true
     }
 });
 

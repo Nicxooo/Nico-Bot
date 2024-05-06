@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField } = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
     .setName('clear')
     .setDescription('Deletes a specific number of messages.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
     .addIntegerOption((option) => option
         .setName('amount')
         .setDescription('How many messages to delete?')
@@ -13,28 +14,24 @@ module.exports = {
     ),
 
     async execute (interaction) {
+        await interaction.deferReply({ ephemeral: true });
         const amount = interaction.options.getInteger('amount');
-        const channel = interaction.channel;
 
-        if (!interaction.member.permissions.has(PermissionsBitField.ManageMessages))
-            return await interaction.reply({ content: 'You dont have permission to execute this command.', ephemeral: true });
+        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages))
+            return interaction.editReply({ content: 'You dont have permission to execute this command.', ephemeral: true });
         
         if (!amount)
-            return await interaction.reply({ content: 'Please specify the amount you want to delete', ephemeral: true });
+            return interaction.editReply({ content: 'Please specify the amount you want to delete', ephemeral: true });
     
         if (amount > 100 || amount < 1)
-            return await interaction.reply({ content: 'Please select a number within the range of 1-100', ephemeral: true });
+            return interaction.editReply({ content: 'Please select a number within the range of 1-100', ephemeral: true });
         
-        await interaction.channel.bulkDelete(amount).catch(error => {
-            return;
-        })
-        
+        await interaction.channel.bulkDelete(amount)
+
         const embed = new EmbedBuilder()
-        .setColor('Blue')
+        .setColor('Random')
         .setDescription(`:white_check_mark: Deleted **${amount}** messages.`)
 
-        await interaction.reply({ embed: [embed] }).catch(error => {
-            return;
-        })
+        interaction.editReply({ embeds: [embed] });
     }
 }
