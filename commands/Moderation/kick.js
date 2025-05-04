@@ -24,13 +24,13 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
         const { options, guild, user} = interaction;
 
-        const target = await options.getMember('member');
+        const target = await options.getMember('target');
         let reason = await options.getString('reason') ?? 'No reason provided.';
 
         if (user.id === target.id)
-            return interaction.deferReply("You can't kick yourself");
+            return interaction.editReply("You can't kick yourself");
         if(!target.kickable)
-            return interaction.deferReply("I can't kick that member");
+            return interaction.editReply("I can't kick that member");
 
         const senderRoles = await interaction.member.roles.cache.map(r => r);
         const targetPerms = target.permissions;
@@ -46,15 +46,15 @@ module.exports = {
 
         if (user.id !== guild.ownerId) {
             if(!higherPerms.has('KickMembers'))
-                return interaction.deferReply("You don't have permissions");
+                return interaction.editReply("You don't have permissions");
             else if (targetPerms.has('Administrator') && !higherPerms.has('Administrator'))
-                return interaction.deferReply("You don't have permissions");
+                return interaction.editReply("You don't have permissions");
         }
 
         let embed = new EmbedBuilder();
         await target.kick({ reason: reason });
 
-        const [ member, created ] = await Member.findOrCreate({ where: { id: target.id, guildId: guild.id} });
+        const [ member, created ] = await member.findOrCreate({ where: { id: target.id, guildId: guild.id} });
         
         await member.createInfraction({
             guildId: guild.id,
@@ -93,6 +93,6 @@ module.exports = {
             console.log(error);
         });
 
-        await interaction.deferReply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 }

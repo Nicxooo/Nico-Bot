@@ -17,6 +17,10 @@ const Guild = sequelize.define('guild', {
     welcomeBackground: {
         type: Sequelize.STRING,
         allowNull: true
+    },
+    rankBackground: {
+        type: Sequelize.STRING,
+        allowNull: true
     }
 });
 

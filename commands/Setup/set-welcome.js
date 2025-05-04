@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, EmbedBuilder } = require('discord.js');
-const Guild = require('../model/guild');
+const Guild = require('../../model/guild');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,7 +30,9 @@ module.exports = {
             subcommand
                 .setName('remove')
                 .setDescription('Deletes the welcome system')
-        ),
+        )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        ,
 
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });

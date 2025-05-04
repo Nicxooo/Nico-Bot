@@ -10,73 +10,74 @@ function getRandomColor() {
         return color;
 }
 
+function isValidImageURL(url) {
+    try {
+        new URL(url);
+        return url.match(/\.(jpeg|jpg|png|gif)$/) !== null;
+    } catch (error) {
+        return false;
+    }
+}
+
 module.exports = {
     name: 'guildMemberAdd',
 
     async execute(member) {
-        const WelcomeGuild = await Guild.findOne({ 
-            where: {id: member.guild.id } 
-        });
+        try {
+            const WelcomeGuild = await Guild.findOne({ 
+                where: { id: member.guild.id } 
+            });
 
-        if (!WelcomeGuild) return;
+            if (!WelcomeGuild) return;
 
-        if(WelcomeGuild.welcomeRoleId) {
-            const welcomeRole = await member.guild.roles.fetch(WelcomeGuild.welcomeRoleId);
-            await member.roles.add(welcomeRole);
-        }
+            if (WelcomeGuild.welcomeRoleId) {
+                const welcomeRole = await member.guild.roles.fetch(WelcomeGuild.welcomeRoleId);
+                if (welcomeRole) await member.roles.add(welcomeRole).catch(console.error);
+            }
 
-        const randomBorderColor = getRandomColor();
-        const randomAvatarBorderColor = getRandomColor();
-        
-        if (WelcomeGuild.welcomeBackground !== null){
-            if (member.guild.memberCount === 3) {
-                const welcome = await new WelcomeLeave()
-                    .setAvatar(member.user.displayAvatarURL({ forceStatic: true, extension: 'png' }))
-                    .setBackground('image', WelcomeGuild.welcomeBackground)
-                    .setTitle('Welcome!')
-                    .setDescription(`Glad you're here ${member.user.username}! you are the ${member.guild.memberCount}rd Member.`)
-                    .setBorder(randomBorderColor)
-                    .setAvatarBorder(randomAvatarBorderColor)
-                    .setOverlayOpacity(0.3)
-                    .build();
+            if (!WelcomeGuild.welcomeChannelId) return;
 
-                if(WelcomeGuild.welcomeChannelId) {
-                    const welcomeChannel = await member.guild.channels.fetch(WelcomeGuild.welcomeChannelId);
-                    welcomeChannel.send({ content: `Welcome to ${member.guild.id}!`, files: [{ attachment: welcome }]
-                    })
+            const borderColor = getRandomColor();
+            const avatarBorderColor = getRandomColor();
+            let backgroundType = 'color';
+            let backgroundValue = getRandomColor();
+
+            if (WelcomeGuild.welcomeBackground && isValidImageURL(WelcomeGuild.welcomeBackground)) {
+                backgroundType = 'image';
+                backgroundValue = WelcomeGuild.welcomeBackground;
+            }
+
+            const memberCount = member.guild.memberCount;
+            let suffix = 'th';
+            const specialCases = [11, 12, 13];
+            if (!specialCases.includes(memberCount % 100)) {
+                switch (memberCount % 10) {
+                    case 1: suffix = 'st'; break;
+                    case 2: suffix = 'nd'; break;
+                    case 3: suffix = 'rd'; break;
                 }
             }
 
-            else {
-                const lastDigit = member.guild.memberCount % 10;
-                const suffix = 
-                    lastDigit === 1 && member.guild.memberCount !== 11 ? 'st' : 
-                    lastDigit === 2 && member.guild.memberCount !== 12 ? 'nd' : 
-                    lastDigit === 3 && member.guild.memberCount !== 13 ? 'rd' : 'th';
+            const welcome = await new WelcomeLeave()
+                .setAvatar(member.user.displayAvatarURL({ forceStatic: true, extension: 'png' }))
+                .setBackground(backgroundType, backgroundValue)
+                .setTitle('Welcome!')
+                .setDescription(`Glad you're here ${member.user.username}! You're the ${memberCount}${suffix} member.`)
+                .setBorder(borderColor)
+                .setAvatarBorder(avatarBorderColor)
+                .setOverlayOpacity(0.3)
+                .build();
 
-                const welcome = await new WelcomeLeave()
-                    .setAvatar(member.user.displayAvatarURL({ forceStatic: true, extension: 'png' }))
-                    .setBackground('image', WelcomeGuild.welcomeBackground)
-                    .setTitle('Welcome!')
-                    .setDescription(`Glad you're here ${member.user.username}! you are the ${member.guild.memberCount}${suffix} Member.`)
-                    .setBorder(randomBorderColor)
-                    .setAvatarBorder(randomAvatarBorderColor)
-                    .setOverlayOpacity(0.3)
-                    .build();
-
-                if(WelcomeGuild.welcomeChannelId) {
-                    const welcomeChannel = await member.guild.channels.fetch(WelcomeGuild.welcomeChannelId);
-                    welcomeChannel.send({ content: `Hi ${member.user.username}, Welcome to ${member.guild.name}!`, files: [{ attachment: welcome }]
-                    })
-                }
+            const welcomeChannel = await member.guild.channels.fetch(WelcomeGuild.welcomeChannelId).catch(console.error);
+            if (welcomeChannel) {
+                await welcomeChannel.send({
+                    content: `Hi ${member.user.username}, Welcome to ${member.guild.name}!`,
+                    files: [{ attachment: welcome, name: `welcome-${member.id}.png` }]
+                }).catch(console.error);
             }
-        }
 
-        else {
-            if(WelcomeGuild.welcomeChannelId) {
-                const welcomeChannel = await member.guild.channels.fetch(WelcomeGuild.welcomeChannelId);
-                welcomeChannel.send({ content: `Hi ${member.user.username}, Welcome to ${member.guild.name}! Grab a drink :beer:`})
-            }
+        } catch (error) {
+            console.error('Error in guildMemberAdd event:', error);
         }
     }
 }
