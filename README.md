@@ -19,7 +19,7 @@ The project was created to explore the Discord API while building a practical au
 
 ## How It Works
 
-NicoBot connects to Discord using the Discord API and listens for command inputs from users within a server.
+NicoBot connects to Discord via the Discord API and listens for user commands in a server.
 When a command is triggered, the bot processes the request and executes the corresponding functionality, such as moderating users, playing music, or responding with automated messages.
 
 ## Project Goals
